@@ -1,3 +1,26 @@
+import subprocess
+import sys
+
+# Function to install packages
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# List of required packages
+required_packages = [
+    "discord.py",
+    "google-generativeai",
+    "yt-dlp",
+    "aiohttp",
+    "beautifulsoup4"
+]
+
+# Install required packages
+for package in required_packages:
+    try:
+        __import__(package)
+    except ImportError:
+        install(package)
+
 import discord
 import os
 import google.generativeai as genai
@@ -7,7 +30,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 from discord import FFmpegPCMAudio
 
-DISCORD_API_KEY = 'MTM0MDg2ODM0NTMwOTk1NDE2Mg.GAP87l.86frUmQAzezJ5Fb3nNVbpuRletW5BSswzbV7K8'
+DISCORD_API_KEY = 'MTM0MDg2ODM0NTMwOTk1NDE2Mg.GDCPPM.b4vKFaLkSFaXk9aXmpvs0q3Qtdo0ngirDU4b8E'
 GEMINI_API_KEY = 'AIzaSyC_PTetZI__yBpHNDLnkgHCRp9bpaa8wzM'
 
 genai.configure(api_key=GEMINI_API_KEY)
