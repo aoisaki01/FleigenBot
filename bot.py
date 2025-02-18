@@ -1,26 +1,3 @@
-import subprocess
-import sys
-
-# Function to install packages
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-# List of required packages
-required_packages = [
-    "discord.py",
-    "google-generativeai",
-    "yt-dlp",
-    "aiohttp",
-    "beautifulsoup4"
-]
-
-# Install required packages
-for package in required_packages:
-    try:
-        __import__(package)
-    except ImportError:
-        install(package)
-
 import discord
 import os
 import google.generativeai as genai
@@ -29,9 +6,17 @@ import yt_dlp as youtube_dl
 import aiohttp
 from bs4 import BeautifulSoup
 from discord import FFmpegPCMAudio
+import logging
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
-DISCORD_API_KEY = 'x'
-GEMINI_API_KEY = 'x'
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
+DISCORD_API_KEY = 'MTM0MDg2ODM0NTMwOTk1NDE2Mg.GwLx5p.uzuVjL6Yf44U5smeSthn1ieIcxknVcJ41BvUBw'
+GEMINI_API_KEY = 'AIzaSyC_PTetZI__yBpHNDLnkgHCRp9bpaa8wzM'
+SPOTIPY_CLIENT_ID = 'your_spotify_client_id'  # Replace with your actual Client ID
+SPOTIPY_CLIENT_SECRET = 'your_spotify_client_secret'  # Replace with your actual Client Secret
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -61,9 +46,12 @@ queue = []
 image_prompts = {}  # Dictionary to store prompt-image associations
 pending_prompts = {}  # Dictionary to store pending prompts
 
+# Spotify client
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET))
+
 @client.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    logging.info(f'We have logged in as {client.user}')
 
 async def send_long_message(channel, message):
     if len(message) <= 2000:
@@ -84,7 +72,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.channel.id == id channel:
+    if message.channel.id == 1341038015186862201:
         response = get_gemini_response(message.content)
         await send_long_message(message.channel, response)
         write_to_memory(f'User: {message.content}\nBot: {response}')
@@ -100,7 +88,7 @@ async def on_message(message):
         write_to_memory(f'User: {query}\nBot: {response}')
     
     if message.content.startswith('fly1'):
-        channel_id = id channel
+        channel_id = 1332111384523309156
         message_content = message.content[len('fly1 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -111,7 +99,7 @@ async def on_message(message):
             await message.channel.send("Invalid channel ID for bhot.")
     
     if message.content.startswith('fly2'):
-        channel_id = id channel
+        channel_id = 1332113600894079131
         message_content = message.content[len('fly2 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -122,7 +110,7 @@ async def on_message(message):
             await message.channel.send("Invalid channel ID for general.")
     
     if message.content.startswith('fly3'):
-        channel_id = id channel
+        channel_id = 1340942564379070535
         message_content = message.content[len('fly3 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -183,7 +171,7 @@ async def on_message(message):
         await message.channel.send('aku nak makan pempek la')
     if message.content.startswith('!carlos'):
         await message.channel.send('halo ganteng')
-    if message.content.startswith('le'):
+    if message.content.endswith('le'):
         await message.channel.send(file=discord.File('C:/Users/Carlos/Desktop/UTY/le.png'))
     if message.content.startswith('gimana le'):
         await message.channel.send('hisapkan dulu le')
@@ -193,7 +181,7 @@ async def on_message(message):
         if not url:
             await message.channel.send('habis simpankanle masukkan url gambar le. ')
             return
-        await download_image(url, 'ur path')
+        await download_image(url, 'C:/Users/Carlos/Desktop/UTY')
         await message.channel.send(f'udah tak savein le. mau dikasih nama apa le.')
         pending_prompts[message.author.id] = os.path.join('C:/Users/Carlos/Desktop/UTY', os.path.basename(url))
 
@@ -212,14 +200,14 @@ async def on_message(message):
     if message.content.startswith('!fp'):
         query = message.content[len('!fp '):].strip()
         if not query:
-            await message.channel.send('Please provide a query after the !fp command.')
+            await message.channel.send('abis !fp masukin judul lagu')
             return
         if message.author.voice is None or message.author.voice.channel is None:
-            await message.channel.send('You need to be in a voice channel to play music.')
+            await message.channel.send('minimal masuk dulu ke voice')
             return
         voice_channel = message.author.voice.channel
-        feedback_channel = client.get_channel(id channel)
-        await feedback_channel.send("Searching for the song...")
+        feedback_channel = client.get_channel(1332111384523309156)
+        await feedback_channel.send("sabar cari dulu")
         queue.append(query)
         if not voice_channel.guild.id in voice_clients:
             await play_next_song(voice_channel, feedback_channel)
@@ -229,19 +217,19 @@ async def on_message(message):
             vc = voice_clients[message.guild.id]
             if vc.is_playing():
                 vc.pause()
-                feedback_channel = client.get_channel(id channel)
-                await feedback_channel.send("Music paused.")
+                feedback_channel = client.get_channel(1332111384523309156)
+                await feedback_channel.send("pause lagu")
             else:
-                await message.channel.send("No music is playing.")
+                await message.channel.send("ga ada lagu muter")
         else:
-            await message.channel.send("Bot is not connected to a voice channel.")
+            await message.channel.send("manggil siape ?")
 
     if message.content.startswith('!fpp'):
         if message.guild.id in voice_clients:
             vc = voice_clients[message.guild.id]
             if vc.is_paused():
                 vc.resume()
-                feedback_channel = client.get_channel(id channel)
+                feedback_channel = client.get_channel(1332111384523309156)
                 await feedback_channel.send("Music resumed.")
             else:
                 await message.channel.send("Music is not paused.")
@@ -253,40 +241,43 @@ async def on_message(message):
             vc = voice_clients[message.guild.id]
             await vc.disconnect()
             del voice_clients[message.guild.id]
-            await message.channel.send("Bot has disconnected from the voice channel.")
+            await message.channel.send("cabut dulu")
         else:
-            await message.channel.send("Bot is not connected to a voice channel.")
+            await message.channel.send("kaga kehubung gw jir")
 
     if message.content.startswith('!flanjutmas'):
         if message.guild.id in voice_clients:
             vc = voice_clients[message.guild.id]
             if vc.is_paused():
                 vc.stop()
-                feedback_channel = client.get_channel(id channel)
-                await feedback_channel.send("Reconnecting to voice channel...")
+                feedback_channel = client.get_channel(1332111384523309156)
+                await feedback_channel.send("relog bentar")
                 voice_channel = message.author.voice.channel
                 vc = await voice_channel.connect()
                 voice_clients[message.guild.id] = vc
-                await feedback_channel.send("Resuming music from the beginning...")
+                await feedback_channel.send("sabar lanjut dulu")
                 await play_next_song(voice_channel, feedback_channel)
             else:
-                await message.channel.send("Music is not paused.")
+                await message.channel.send("musiknya kaga ke pause jir")
         else:
             if message.author.voice is None or message.author.voice.channel is None:
-                await message.channel.send('You need to be in a voice channel to resume music.')
+                await message.channel.send('masuk voice dulu baru lanjut')
                 return
             voice_channel = message.author.voice.channel
-            feedback_channel = client.get_channel(id channel)
-            await feedback_channel.send("Reconnecting to voice channel...")
+            feedback_channel = client.get_channel(1332111384523309156)
+            await feedback_channel.send("rikonek bentar")
             vc = await voice_channel.connect()
             voice_clients[message.guild.id] = vc
-            await feedback_channel.send("Resuming music from the beginning...")
+            await feedback_channel.send("nih lanjutannya")
             await play_next_song(voice_channel, feedback_channel)
 
 async def play_next_song(voice_channel, feedback_channel):
     if not queue:
-        await feedback_channel.send("Queue is empty. Adding default song to the queue.")
-        queue.append("https://www.youtube.com/watch?v=J_CFBjAyPWE")
+        await feedback_channel.send("dikarenakan ga ada queue")
+        vc = voice_clients.pop(voice_channel.guild.id, None)
+        if vc:
+            await vc.disconnect()
+        return
     
     query = queue.pop(0)
     await play_music(voice_channel, query, feedback_channel)
@@ -297,8 +288,30 @@ async def play_music(voice_channel, query, feedback_channel):
         'noplaylist': True,
         'default_search': 'ytsearch',
         'quiet': True,
+        'cookies': 'SID=g.a000twhngFyAPJ_nQqg-ce-glrlKoTmHAjXYuSTuO-zktHMgU_-PQ7EELFh-3VzfaqaBLGbFSAACgYKAZgSARQSFQHGX2Mih5K5Dk_usSVlDmYjjRsRZxoVAUF8yKpxVmO1AKHZ7bG1Tw-851690076',  # Directly use the cookie value
+    }
+    ffmpeg_options = {
+        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+        'options': '-vn -c:v mp4v -filter:a "volume=0.15"'
     }
     try:
+        # Check if the query is a Spotify URL
+        if "open.spotify.com" in query:
+            if "playlist" in query:
+                playlist_id = query.split("/")[-1].split("?")[0]
+                playlist_tracks = sp.playlist_tracks(playlist_id)
+                for item in playlist_tracks['items']:
+                    track = item['track']
+                    track_query = f"{track['name']} {track['artists'][0]['name']}"
+                    queue.append(track_query)
+                await feedback_channel.send(f"Added {len(playlist_tracks['items'])} tracks from the playlist to the queue.")
+                if not voice_channel.guild.id in voice_clients:
+                    await play_next_song(voice_channel, feedback_channel)
+                return
+            else:
+                track_info = sp.track(query)
+                query = f"{track_info['name']} {track_info['artists'][0]['name']}"
+
         # Search and download URL Audio
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(query, download=False)
@@ -316,14 +329,21 @@ async def play_music(voice_channel, query, feedback_channel):
             vc = await voice_channel.connect(self_deaf=True)
             voice_clients[voice_channel.guild.id] = vc
 
-        await feedback_channel.send(f"🎵 Now playing: **{title}**")
+        await feedback_channel.send(f"memuterkan lagu: {title}")
 
         # Play audio
-        source = FFmpegPCMAudio(url2)
+        source = FFmpegPCMAudio(url2, **ffmpeg_options)
         vc.play(source, after=lambda e: asyncio.run_coroutine_threadsafe(play_next_song(voice_channel, feedback_channel), client.loop))
 
+        # Wait for the audio to finish playing
+        while vc.is_playing():
+            await asyncio.sleep(1)
+
+        logging.info(f"ffmpeg process for {title} successfully terminated")
+
     except Exception as e:
-        await feedback_channel.send(f"⚠️ Error: {str(e)}")
+        logging.error(f"error cok: {str(e)}")
+        await feedback_channel.send(f"Error: {str(e)}")
 
 async def fetch_and_send_lyrics(title, feedback_channel):
     try:
@@ -347,7 +367,8 @@ async def fetch_and_send_lyrics(title, feedback_channel):
         else:
             await feedback_channel.send(f"Could not find lyrics for {title}.")
     except Exception as e:
-        await feedback_channel.send(f"Could not fetch lyrics: {str(e)}")
+        logging.error(f"Error fetching lyrics: {str(e)}")
+        await feedback_channel,send(f"Could not fetch lyrics: {str(e)}")
 
 async def download_image(url, save_path):
     try:
@@ -358,15 +379,19 @@ async def download_image(url, save_path):
                     file_name = os.path.join(save_path, os.path.basename(url))
                     with open(file_name, 'wb') as f:
                         f.write(image_data)
-                    print(f"Image downloaded and saved to {file_name}")
+                    logging.info(f"Image downloaded and saved to {file_name}")
                 else:
-                    print(f"Failed to download image. Status code: {response.status}")
+                    logging.error(f"Failed to download image. Status code: {response.status}")
     except Exception as e:
-        print(f"Error downloading image: {str(e)}")
+        logging.error(f"Error downloading image: {str(e)}")
 
 def get_gemini_response(query):
-    chat_session = model.start_chat(history=[])
-    response = chat_session.send_message(query)
-    return response.text
+    try:
+        chat_session = model.start_chat(history=[])
+        response = chat_session.send_message(query)
+        return response.text
+    except Exception as e:
+        logging.error(f"Error getting Gemini response: {str(e)}")
+        return "Error getting response from Gemini."
 
 client.run(DISCORD_API_KEY)
