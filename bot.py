@@ -30,8 +30,8 @@ import aiohttp
 from bs4 import BeautifulSoup
 from discord import FFmpegPCMAudio
 
-DISCORD_API_KEY = 'MTM0MDg2ODM0NTMwOTk1NDE2Mg.GDCPPM.b4vKFaLkSFaXk9aXmpvs0q3Qtdo0ngirDU4b8E'
-GEMINI_API_KEY = 'AIzaSyC_PTetZI__yBpHNDLnkgHCRp9bpaa8wzM'
+DISCORD_API_KEY = 'x'
+GEMINI_API_KEY = 'x'
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -84,7 +84,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.channel.id == 1341038015186862201:
+    if message.channel.id == id channel:
         response = get_gemini_response(message.content)
         await send_long_message(message.channel, response)
         write_to_memory(f'User: {message.content}\nBot: {response}')
@@ -100,7 +100,7 @@ async def on_message(message):
         write_to_memory(f'User: {query}\nBot: {response}')
     
     if message.content.startswith('fly1'):
-        channel_id = 1332111384523309156
+        channel_id = id channel
         message_content = message.content[len('fly1 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -111,7 +111,7 @@ async def on_message(message):
             await message.channel.send("Invalid channel ID for bhot.")
     
     if message.content.startswith('fly2'):
-        channel_id = 1332113600894079131
+        channel_id = id channel
         message_content = message.content[len('fly2 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -122,7 +122,7 @@ async def on_message(message):
             await message.channel.send("Invalid channel ID for general.")
     
     if message.content.startswith('fly3'):
-        channel_id = 1340942564379070535
+        channel_id = id channel
         message_content = message.content[len('fly3 '):].strip()
         channel = client.get_channel(channel_id)
         if channel:
@@ -193,7 +193,7 @@ async def on_message(message):
         if not url:
             await message.channel.send('habis simpankanle masukkan url gambar le. ')
             return
-        await download_image(url, 'C:/Users/Carlos/Desktop/UTY')
+        await download_image(url, 'ur path')
         await message.channel.send(f'udah tak savein le. mau dikasih nama apa le.')
         pending_prompts[message.author.id] = os.path.join('C:/Users/Carlos/Desktop/UTY', os.path.basename(url))
 
@@ -218,7 +218,7 @@ async def on_message(message):
             await message.channel.send('You need to be in a voice channel to play music.')
             return
         voice_channel = message.author.voice.channel
-        feedback_channel = client.get_channel(1332111384523309156)
+        feedback_channel = client.get_channel(id channel)
         await feedback_channel.send("Searching for the song...")
         queue.append(query)
         if not voice_channel.guild.id in voice_clients:
@@ -229,7 +229,7 @@ async def on_message(message):
             vc = voice_clients[message.guild.id]
             if vc.is_playing():
                 vc.pause()
-                feedback_channel = client.get_channel(1332111384523309156)
+                feedback_channel = client.get_channel(id channel)
                 await feedback_channel.send("Music paused.")
             else:
                 await message.channel.send("No music is playing.")
@@ -241,7 +241,7 @@ async def on_message(message):
             vc = voice_clients[message.guild.id]
             if vc.is_paused():
                 vc.resume()
-                feedback_channel = client.get_channel(1332111384523309156)
+                feedback_channel = client.get_channel(id channel)
                 await feedback_channel.send("Music resumed.")
             else:
                 await message.channel.send("Music is not paused.")
@@ -262,7 +262,7 @@ async def on_message(message):
             vc = voice_clients[message.guild.id]
             if vc.is_paused():
                 vc.stop()
-                feedback_channel = client.get_channel(1332111384523309156)
+                feedback_channel = client.get_channel(id channel)
                 await feedback_channel.send("Reconnecting to voice channel...")
                 voice_channel = message.author.voice.channel
                 vc = await voice_channel.connect()
@@ -276,7 +276,7 @@ async def on_message(message):
                 await message.channel.send('You need to be in a voice channel to resume music.')
                 return
             voice_channel = message.author.voice.channel
-            feedback_channel = client.get_channel(1332111384523309156)
+            feedback_channel = client.get_channel(id channel)
             await feedback_channel.send("Reconnecting to voice channel...")
             vc = await voice_channel.connect()
             voice_clients[message.guild.id] = vc
