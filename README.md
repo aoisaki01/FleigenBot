@@ -75,7 +75,7 @@ This is a Discord bot that uses Google Generative AI to generate responses and i
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+My guwe ketika mk
 
 ## Contributing
 
